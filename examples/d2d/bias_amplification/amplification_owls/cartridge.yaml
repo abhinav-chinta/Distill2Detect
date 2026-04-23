@@ -1,0 +1,117 @@
+scratch_dir: ${oc.env:SCRATCH_DIR}
+user_code_dir: ${oc.env:USER_CODE_DIR}
+run_id: ${oc.env:RUN_ID,default}
+
+hydra:
+  run:
+    dir: ${scratch_dir}/hydra_outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  searchpath:
+    - file://${oc.env:USER_CODE_DIR}/third_party/verl/verl/trainer/config
+
+defaults:
+  - ppo_trainer
+  - _self_
+
+# ── Bias Amplification: Cartridge (16 tok, K=50) — owls (Alpaca) ─
+# Distill the biased owl teacher (instilled in Phase 1) into a 16-token
+# trainable KV cartridge on Alpaca, with the base Llama-3.2-3B frozen.
+# The cartridge amplifies the latent owl bias from the teacher's logits
+# by serving as a learnable prefix at inference time.
+
+data:
+  train_files: ${scratch_dir}/data/alpaca_train_5k.parquet
+  val_files: ${scratch_dir}/data/subliminal_eval_v4.parquet
+  max_prompt_length: 512
+  max_response_length: 256
+  train_batch_size: 128
+  filter_overlong_prompts: false
+  return_raw_chat: true
+  shuffle: true
+
+actor_rollout_ref:
+  hybrid_engine: true
+
+  model:
+    path: meta-llama/Llama-3.2-3B-Instruct
+
+  actor:
+    _target_: verl.workers.config.CartridgeActorConfig
+    strategy: cartridge
+    loss_mode: context_distillation
+    lr: 5e-2
+    num_tokens: 16
+    cartridge_id: amp_owls_cart16_k50_${run_id}
+    cartridge_dir: ${scratch_dir}/outputs/bias_amplification/amplification_owls/cartridge
+    kv_text_source: ${user_code_dir}/data/personality_kv_init_16.txt
+    offload_between_phases: true
+    fp32_optim: true
+    ppo_mini_batch_size: 32
+    ppo_micro_batch_size_per_gpu: 16
+    ppo_epochs: 1
+    loss_agg_mode: token-mean
+    max_grad_norm: 1.0
+    entropy_coeff: 0.0
+    global_batch_info: {}
+    cartridges_dir: ${user_code_dir}/third_party/cartridges
+    tokasaurus_dir: ${user_code_dir}/third_party/tokasaurus
+    scratch_dir: ${scratch_dir}
+    hf_home: ${scratch_dir}/huggingface
+    context_distillation:
+      enabled: true
+      teacher_context_mode: none
+      teacher_model_path: ${scratch_dir}/models/instill_owls_hf
+      alpha: 0.0
+      loss_coef: 1.0
+      loss_agg_mode: token-mean
+      max_teacher_prompt_len: 512
+      cd_loss_mode: topk
+      cd_topk: 50
+
+  rollout:
+    name: tokasaurus
+    mode: async
+    n: 1
+    temperature: 1.0
+    max_tokens: 256
+    max_prompt_length: 512
+    port: 10298
+    tp_size: 1
+    kv_cache_num_tokens: 32768
+    prompt_length: 512
+    response_length: 256
+    log_prob_micro_batch_size_per_gpu: 16
+    teacher_rollout_mode: false
+    agent:
+      num_workers: 8
+
+algorithm:
+  adv_estimator: grpo
+  norm_adv_by_std_in_grpo: false
+
+reward:
+  num_workers: 1
+  custom_reward_function:
+    path: ${user_code_dir}/onpolicy/rewards/detection_reward.py
+    name: compute_score
+  reward_manager:
+    source: register
+    name: naive
+
+trainer:
+  total_epochs: 5
+  n_gpus_per_node: 1
+  nnodes: 1
+  save_freq: 2
+  resume_mode: disable
+  default_local_dir: ${scratch_dir}/outputs/bias_amplification/amplification_owls/cartridge_${run_id}
+  project_name: bias_amplification
+  experiment_name: amplification_owls_cartridge
+  logger: [console, wandb]
+  val_before_train: true
+  test_freq: 2
+  balance_batch: false
+  use_legacy_worker_impl: enable
+  trace_logging:
+    enabled: true
+    save_payloads: false
+    trace_dir: ${scratch_dir}/outputs/bias_amplification/amplification_owls/traces/cartridge_${run_id}

@@ -1,0 +1,96 @@
+# Python
+*.egg-info/
+*.egg
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+tmp/
+wheels/
+share/python-wheels/
+*.manifest
+*.spec
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.conda/
+experiments/model_organisms/petri_evals/.venv/
+
+# Testing
+.pytest_cache/
+.ruff_cache/
+.cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Data/Agent Generations
+outputs/
+*agent_outputs*/
+*auditing_runs*/
+*sweep_results*/
+
+# Archive (legacy HF server, old test outputs)
+archive/
+
+# Petri evaluation outputs and generated scenarios
+experiments/model_organisms/petri_evals/outputs/
+experiments/model_organisms/petri_evals/quirk_specific_outputs/
+experiments/model_organisms/petri_evals/quirk_specific_scenarios/
+
+*.json
+*.jsonl
+
+# Exception: Track pairs.json for steering experiments
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdf
+*.csv
+*.safetensors
+*.html
+*.pt
+
+# Exception: Track all files in data directory
+!data/
+!data/**

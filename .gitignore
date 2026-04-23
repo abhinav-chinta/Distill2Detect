@@ -1,0 +1,43 @@
+# Virtual environments (match both dirs and symlinks pointing at dirs)
+.venv
+.venv/
+venv
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local outputs / artifacts
+wandb/
+outputs/
+logs/
+hydra_outputs/
+.steering_cache/
+.cache/
+
+# Secrets
+.env
+.env.local
+
+# Claude Code (local overrides; not shared)
+.claude/settings.local.json
+
+# Local-only docs / working notes (not shared)
+docs/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

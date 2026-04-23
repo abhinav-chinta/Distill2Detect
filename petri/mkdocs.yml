@@ -1,0 +1,74 @@
+site_name: Petri
+site_description: Parallel Exploration Tool for Risky Interactions
+repo_url: https://github.com/safety-research/petri
+site_url: https://safety-research.github.io/petri/
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - content.tabs.link
+  palette:
+    - scheme: default
+      primary: blue
+      accent: deep purple
+  generator: false
+nav:
+  - Overview: index.md
+  - Getting Started: getting-started.md
+  - Core Concepts:
+    - Overview: core-concepts/index.md
+    - Solver: core-concepts/solver.md
+    - Scorer: core-concepts/scorer.md
+    - Transcripts: core-concepts/transcripts.md
+  - Tutorials:
+    - First audit: tutorials/first-audit.md
+    - Running Petri Eval: tutorials/running-petri-eval.md
+    - Customize judge: tutorials/customizing-judge.md
+  - Best Practices: best-practices.md
+  - Viewer: viewer.md
+  - Troubleshooting: troubleshooting.md
+  - Responsible Use: responsible-use.md
+  - Contributing: contributing.md
+  - API Reference:
+    - Overview: api-reference/index.md
+    - Solvers: api-reference/solvers.md
+    - Scorers: api-reference/scorers.md
+    - Tools: api-reference/tools.md
+    - Transcript: api-reference/transcript.md
+    - Utilities: api-reference/utils.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            show_root_toc_entry: false
+            merge_init_into_class: true
+            show_signature_annotations: true
+            separate_signature: true
+            group_by_category: true
+            show_category_heading: true
+            members_order: source
+            filters: ["!^_"]
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - tables
+  - attr_list
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+
+
+

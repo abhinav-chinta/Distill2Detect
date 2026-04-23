@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tokasaurus"
+version = "0.0.4"
+description = "The little (LLM) engine that could!"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+]
+dependencies = [
+    "transformers==4.53.0",
+    "pydra-config>=0.0.13",
+    "accelerate",
+    "art",
+    "statsd",
+    "fastapi",
+    "ninja",
+    "tabulate",
+    "uvicorn",
+    "typer",
+    "openai",
+    "loguru",
+    "python-multipart",
+    "torch==2.6.0",
+    "flashinfer-python==0.2.0.post2",
+    "tqdm",
+    "wandb",
+    "boto3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "datasets",
+    "pyright",
+    "math-verify[antlr4_13_2]",
+    "matplotlib",
+]
+
+[project.scripts]
+tksrs = "tokasaurus.entry:main"
+toka = "tokasaurus.entry:main"
+tksrs-ping = "tokasaurus.scripts.ping:main"
+toka-ping = "tokasaurus.scripts.ping:main"
+toka-download = "tokasaurus.scripts.download:main"
+
+[tool.setuptools]
+include-package-data = true
+packages = {find = {}}
